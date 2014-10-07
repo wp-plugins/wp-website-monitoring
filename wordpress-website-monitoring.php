@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 Plugin Name: WordPress Website Monitoring
 Plugin URI: https://wordpress.org/plugins/wp-website-monitoring/
 Description: Receive an email notification when your website is down.
-Version: 1.0
+Version: 1.1
 Author: WP Rocket
 Author URI: http://wp-rocket.me
 
@@ -14,8 +14,8 @@ Domain Path: languages
 
 */
 
-define( 'WWM_VERSION'		, '1.0' );
-define( 'WWM_NAME'			, 'WordPress Website Monitoring' );
+define( 'WWM_VERSION'		, '1.1' );
+define( 'WWM_NAME'			, 'Website Monitoring' );
 define( 'WWM_SLUG'			, 'wordpress_website_monitoring' );
 define( 'WWM_API_URL'		, 'https://support.wp-rocket.me/api/monitoring/process.php' );
 define( 'WWM_API_USER_AGENT', 'WP-Rocket' );
@@ -297,6 +297,8 @@ class WordPress_Website_Monitoring {
 	public function display_page() { ?>
 		<div class="wrap">
 			<h2><?php echo WWM_NAME . ' <small><sup>' . WWM_VERSION . '</sup></small>'; ?></h2>
+			<div class="updated settings-error" id="setting-error-settings_updated" style="display: inline-block;"> 
+<p><strong><?php printf( __( 'If you enjoy our plugin, could you <a href="%s" target="_blank">rate it on wordpress.org</a>? Thank you :)', 'wordpress-website-monitoring' ), 'https://wordpress.org/support/view/plugin-reviews/wp-website-monitoring?rate=5#postform' ); ?></strong></p></div>
 			<p><?php _e( 'We check your website every 5 minutes.', 'wordpress-website-monitoring' ); ?></p>
 			<p><?php _e( 'If your website is down, you will be notified by email.', 'wordpress-website-monitoring' ); ?>
 			<br/>
@@ -311,6 +313,7 @@ class WordPress_Website_Monitoring {
 				submit_button();
 			    ?>
 			</form>
+			
 		</div>
 	<?php
 	}
