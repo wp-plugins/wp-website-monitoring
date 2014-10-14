@@ -19,6 +19,24 @@ WordPress Website Monitoring is so really to use: enable the plugin and that’s
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to 'WordPress Website Monitoring' under the 'Settings' tab and configure the plugin
 
+== Frequently Asked Questions ==
+
+= Who is behind this? =
+
+This service is hand crafted by the guys behind <a href="http://wp-rocket.me/legal/">WP Rocket</a>.
+
+= What kind of data do you store? =
+
+We only store your email and your website URL to send notification when your website is down/up.
+
+Your email won't be advertised via unwanted electronic messages such as spam and unsolicited promotional methods!
+
+= What is the business model of this plugin? =
+
+We don't have any business model. 
+
+This plugin is totally free and we don't want to earn money with this plugin :-)
+
 == Changelog ==
 
 = 1.1 =
