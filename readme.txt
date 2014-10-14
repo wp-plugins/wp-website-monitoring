@@ -13,8 +13,6 @@ Our monitoring tool will alert you when your site is down. Every 5 minutes our r
 
 WordPress Website Monitoring is so really to use: enable the plugin and that’s all. Your website is automatically monitored.
 
-This service is brought by WP Rocket : http://wp-rocket.me
-
 == Installation ==
 
 1. Upload the complete `wp-website-monitoring` folder to the `/wp-content/plugins/` directory
