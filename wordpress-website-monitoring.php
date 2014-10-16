@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 Plugin Name: WordPress Website Monitoring
 Plugin URI: https://wordpress.org/plugins/wp-website-monitoring/
 Description: Receive an email notification when your website is down.
-Version: 2.0
+Version: 2.0.1
 Author: WP Rocket
 Author URI: http://wp-rocket.me
 
@@ -14,7 +14,7 @@ Domain Path: languages
 
 */
 
-define( 'WWM_VERSION'		, '2.0' );
+define( 'WWM_VERSION'		, '2.0.1' );
 define( 'WWM_NAME'			, 'Website Monitoring' );
 define( 'WWM_SLUG'			, 'wordpress_website_monitoring' );
 define( 'WWM_API_URL'		, 'https://support.wp-rocket.me/api/monitoring/process.php' );
@@ -119,6 +119,7 @@ class WordPress_Website_Monitoring {
 	public function admin_enqueue_scripts() {
 		// Get array list of dismissed pointers for current user and convert it to array
 		$dismissed_pointers = explode( ',', get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+		
 		if( current_user_can( 'manage_options' ) && ! in_array( 'wp_website_monitoring', $dismissed_pointers ) && get_current_screen()->base != 'settings_page_wordpress_website_monitoring' && empty( $this->options['email'] ) ) {
 			wp_enqueue_style( 'wp-pointer' );
 			wp_enqueue_script( 'wp-pointer' );
@@ -134,43 +135,46 @@ class WordPress_Website_Monitoring {
 	 * @return string
 	 */
 	public function add_pointer_scripts()
-	{
-		$content  = '<h3>' . WWM_NAME . ': ' . __( 'Last Step', 'wordpress-website-monitoring' ) . '</h3>';
-		$content .= '<p>' . __( 'To send you notifications, we need your email address.', 'wordpress-website-monitoring' ) . '</p>';
-		$content .= '<p>'. __( 'Your email will be use only for notification and never for unsolicited advertisement.', 'wordpress-website-monitoring' ) . '</p>';
-		?>
-
-		<script type="text/javascript">
-		/* <![CDATA[ */
-		(function($) {
-		    $(document).ready(function() {
-			    $('#menu-settings').pointer({
-		        content: "<?php echo $content; ?>",
-		        position: {
-	                edge: 'bottom',
-	                align: 'center'
-	            },
-	            buttons: function( event, t ) {
-					var close  = ( wpPointerL10n ) ? wpPointerL10n.dismiss : 'Dismiss',
-						button = $('<a class="button-primary" style="float: none" href="<?php echo admin_url( 'options-general.php?page=' . WWM_SLUG ); ?>"><?php _e( 'Enter my email now', 'wordpress-website-monitoring'); ?></a><a class="close" href="#">' + close + '</a>');
-
-					return button.bind( 'click.pointer', function(e) {
-						t.element.pointer('close');
-					});
-				},
-		        close: function() {
-		            $.post( ajaxurl, {
-                    	pointer: 'wp_website_monitoring',
-						action: 'dismiss-wp-pointer'
-	                });
-		        }
-		    }).pointer('open');
-		    });
-
-		})(jQuery);
-		/* ]]> */
-		</script>
-	<?php
+	{	
+		if( current_user_can( 'manage_options' ) && ! in_array( 'wp_website_monitoring', $dismissed_pointers ) && get_current_screen()->base != 'settings_page_wordpress_website_monitoring' && empty( $this->options['email'] ) ) {
+		
+			$content  = '<h3>' . WWM_NAME . ': ' . __( 'Last Step', 'wordpress-website-monitoring' ) . '</h3>';
+			$content .= '<p>' . __( 'To send you notifications, we need your email address.', 'wordpress-website-monitoring' ) . '</p>';
+			$content .= '<p>'. __( 'Your email will be use only for notification and never for unsolicited advertisement.', 'wordpress-website-monitoring' ) . '</p>';
+			?>
+	
+			<script type="text/javascript">
+			/* <![CDATA[ */
+			(function($) {
+			    $(document).ready(function() {
+				    $('#menu-settings').pointer({
+			        content: "<?php echo $content; ?>",
+			        position: {
+		                edge: 'bottom',
+		                align: 'center'
+		            },
+		            buttons: function( event, t ) {
+						var close  = ( wpPointerL10n ) ? wpPointerL10n.dismiss : 'Dismiss',
+							button = $('<a class="button-primary" style="float: none" href="<?php echo admin_url( 'options-general.php?page=' . WWM_SLUG ); ?>"><?php _e( 'Enter my email now', 'wordpress-website-monitoring'); ?></a><a class="close" href="#">' + close + '</a>');
+	
+						return button.bind( 'click.pointer', function(e) {
+							t.element.pointer('close');
+						});
+					},
+			        close: function() {
+			            $.post( ajaxurl, {
+	                    	pointer: 'wp_website_monitoring',
+							action: 'dismiss-wp-pointer'
+		                });
+			        }
+			    }).pointer('open');
+			    });
+	
+			})(jQuery);
+			/* ]]> */
+			</script>
+		<?php
+		}
 	}
 
 	/**
