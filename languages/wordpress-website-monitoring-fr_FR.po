@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WordPress Website Monitoring\n"
-"POT-Creation-Date: 2014-10-07 16:35-0800\n"
-"PO-Revision-Date: 2014-10-07 16:35-0800\n"
+"POT-Creation-Date: 2014-10-15 21:27-0800\n"
+"PO-Revision-Date: 2014-10-15 21:28-0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -18,42 +18,64 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: wordpress-website-monitoring.php:151
+#: wordpress-website-monitoring.php:96 wordpress-website-monitoring.php:138
+msgid "Last Step"
+msgstr "Dernière étape"
+
+#: wordpress-website-monitoring.php:97 wordpress-website-monitoring.php:139
+msgid "To send you notifications, we need your email address."
+msgstr ""
+"Pour vous envoyer les notifications, nous avons besoin de votre adresse "
+"email."
+
+#: wordpress-website-monitoring.php:98 wordpress-website-monitoring.php:140
+msgid ""
+"Your email will be use only for notification and never for unsolicited "
+"advertisement."
+msgstr ""
+"Votre email sera utilisé seulement pour les notifications et ne sera jamais "
+"sollicité pour de la publicité."
+
+#: wordpress-website-monitoring.php:99 wordpress-website-monitoring.php:155
+msgid "Enter my email now"
+msgstr "Préciser mon email dès maintenant"
+
+#: wordpress-website-monitoring.php:211
 msgid "Email"
 msgstr "Email"
 
-#: wordpress-website-monitoring.php:154
+#: wordpress-website-monitoring.php:214
 msgid "Emails will be sent at this specific address."
 msgstr "Les emails seront envoyés à cette adresse."
 
-#: wordpress-website-monitoring.php:285
+#: wordpress-website-monitoring.php:341
 msgid "Settings"
 msgstr "Réglages"
 
-#: wordpress-website-monitoring.php:300
+#: wordpress-website-monitoring.php:357
+#, php-format
+msgid ""
+"If you enjoy our plugin, could you <a href=\"%s\" target=\"_blank\">rate it "
+"on wordpress.org</a>? Thank you :)"
+msgstr ""
+"Si vous appréciez notre plugin, pouvez-vous <a href=\"%s\" target=\"_blank"
+"\">le noter sur wordpress.org</a> ?"
+
+#: wordpress-website-monitoring.php:358
 msgid "We check your website every 5 minutes."
 msgstr "Nous vérifions la disponibilité de votre site toutes les 5 minutes."
 
-#: wordpress-website-monitoring.php:301
+#: wordpress-website-monitoring.php:359
 msgid "If your website is down, you will be notified by email."
 msgstr ""
 "Si votre site est inaccessible, nous vous enverrons une notification par "
 "email."
 
-#: wordpress-website-monitoring.php:303
+#: wordpress-website-monitoring.php:361
 msgid "We will let you know once your website is back."
 msgstr "Nous vous préviendrons une fois qu'il sera de nouveau disponible."
 
-#: wordpress-website-monitoring.php:305
+#: wordpress-website-monitoring.php:363
 #, php-format
 msgid "This service is brought with love by <a href=\"%s\">WP Rocket</a>."
 msgstr "Ce service est proposé avec amour par <a href=\"%s\">WP Rocket</a>."
-
-#: wordpress-website-monitoring.php:307
-#, php-format
-msgid ""
-"If you enjoy our plugin, could you <a href=\"%s\" target=\"_blank\">rate it "
-"on wordpress.org</a>?"
-msgstr ""
-"Si vous appréciez notre plugin, pouvez-vous <a href=\"%s\" target=\"_blank"
-"\">le noter sur wordpress.org</a> ?"
