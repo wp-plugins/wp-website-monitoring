@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 Plugin Name: WordPress Website Monitoring
 Plugin URI: https://wordpress.org/plugins/wp-website-monitoring/
 Description: Receive an email notification when your website is down.
-Version: 1.1
+Version: 2.0.2
 Author: WP Rocket
 Author URI: http://wp-rocket.me
 
@@ -14,7 +14,7 @@ Domain Path: languages
 
 */
 
-define( 'WWM_VERSION'		, '1.1' );
+define( 'WWM_VERSION'		, '2.0.2' );
 define( 'WWM_NAME'			, 'Website Monitoring' );
 define( 'WWM_SLUG'			, 'wordpress_website_monitoring' );
 define( 'WWM_API_URL'		, 'https://support.wp-rocket.me/api/monitoring/process.php' );
@@ -44,9 +44,6 @@ class WordPress_Website_Monitoring {
 		// Tell WP what to do when the plugin is loaded
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
 
-		// Tell wp what to do when the plugin is activated
-		register_activation_hook( __FILE__, array( &$this, 'activate' ) );
-
 		// Tell wp what to do when plugin is deactivated
 		register_deactivation_hook( __FILE__, array( &$this, 'deactivate' ) );
 	}
@@ -62,10 +59,10 @@ class WordPress_Website_Monitoring {
 	public function init() {
 		// Load translations
 		load_plugin_textdomain( 'wordpress-website-monitoring', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-    
+
 		// Set plugin options
 		$this->options = get_option( WWM_SLUG );
-		
+
 		// Add menu page
 		add_action( 'admin_menu', array( &$this, 'add_submenu' ) );
 
@@ -74,42 +71,111 @@ class WordPress_Website_Monitoring {
 
 		// Settings API
 		add_action( 'admin_init', array( &$this, 'register_setting' ) );
-		add_action( 'update_option_' . WWM_SLUG, array( &$this, 'update_option' ), 10, 2 );
+		add_action( 'pre_update_option_' . WWM_SLUG, array( &$this, 'pre_update_option' ), 10, 2 );
+
+		// Register admin styles and scripts
+		add_action( 'admin_enqueue_scripts', array( &$this, 'admin_enqueue_scripts' ) );
+
+		// Add pointer JavaScript
+		add_action( 'admin_print_footer_scripts', array( &$this, 'add_pointer_scripts' ) );
+
+		// Add notice to prevent users
+		add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 	}
 
 	/**
-	 * This function is called when the plugin is activated.
+	 * Add notice to prevent users.
 	 *
-	 * @since 1.0
+	 * @since 2.0
 	 *
 	 * @access public
 	 * @return void
 	 */
-	public function activate() {
-		// Add default options
-		if( ! $this->options ) {
-			$this->options['email'] = get_option( 'admin_email' );
-			update_option( WWM_SLUG, array( 'email' => $this->options['email'] ) );
+	public function admin_notices()
+	{
+		$content  = '<h3>' . WWM_NAME . ': ' . __( 'Last Step', 'wordpress-website-monitoring' ) . '</h3>';
+		$content .= '<p>' . __( 'To send you notifications, we need your email address.', 'wordpress-website-monitoring' ) . '</p>';
+		$content .= '<p>'. __( 'Your email will be use only for notification and never for unsolicited advertisement.', 'wordpress-website-monitoring' ) . '</p>';
+		$content .= '<p><a class="button-primary" style="float: none" href="' . admin_url( 'options-general.php?page=' . WWM_SLUG ) . '">' . __( 'Enter my email now', 'wordpress-website-monitoring' ) . '</a></p>';
+
+		if ( current_user_can( 'manage_options' ) && get_current_screen()->base != 'settings_page_wordpress_website_monitoring' && empty( $this->options['email'] ) ) { ?>
+
+			<div class="error">
+				<?php echo $content; ?>
+			</div>
+
+		<?php
 		}
+	}
 
-		// Call API
-		$api = wp_remote_post(
-			WWM_API_URL,
-			array(
-				'user-agent' => WWM_API_USER_AGENT,
-				'timeout'	 => 10,
-				'body'       => array(
-					'action' => 'add',
-					'url'    => home_url(),
-					'email'  => $this->options['email']
-				)
-			)
-		);
-		$data = wp_remote_retrieve_body( $api );
-		$data = json_decode( $data );
+	/**
+	 * Register admin styles and scripts.
+	 *
+	 * @since 2.0
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function admin_enqueue_scripts() {
+		// Get array list of dismissed pointers for current user and convert it to array
+		$dismissed_pointers = explode( ',', get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+		
+		if( current_user_can( 'manage_options' ) && ! in_array( 'wp_website_monitoring', $dismissed_pointers ) && get_current_screen()->base != 'settings_page_wordpress_website_monitoring' && empty( $this->options['email'] ) ) {
+			wp_enqueue_style( 'wp-pointer' );
+			wp_enqueue_script( 'wp-pointer' );
+		}
+	}
 
-		if ( $data->status == 'success' ) {
-			update_option( WWM_SLUG, array( 'email' => $this->options['email'], 'token' => $data->token ) );
+	/**
+	 * Add pointer JavaScript
+	 *
+	 * @since 2.0
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function add_pointer_scripts()
+	{	
+		// Get array list of dismissed pointers for current user and convert it to array
+		$dismissed_pointers = explode( ',', get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+		if( current_user_can( 'manage_options' ) && ! in_array( 'wp_website_monitoring', $dismissed_pointers ) && get_current_screen()->base != 'settings_page_wordpress_website_monitoring' && empty( $this->options['email'] ) ) {
+		
+			$content  = '<h3>' . WWM_NAME . ': ' . __( 'Last Step', 'wordpress-website-monitoring' ) . '</h3>';
+			$content .= '<p>' . __( 'To send you notifications, we need your email address.', 'wordpress-website-monitoring' ) . '</p>';
+			$content .= '<p>'. __( 'Your email will be use only for notification and never for unsolicited advertisement.', 'wordpress-website-monitoring' ) . '</p>';
+			?>
+	
+			<script type="text/javascript">
+			/* <![CDATA[ */
+			(function($) {
+			    $(document).ready(function() {
+				    $('#menu-settings').pointer({
+			        content: "<?php echo $content; ?>",
+			        position: {
+		                edge: 'bottom',
+		                align: 'center'
+		            },
+		            buttons: function( event, t ) {
+						var close  = ( wpPointerL10n ) ? wpPointerL10n.dismiss : 'Dismiss',
+							button = $('<a class="button-primary" style="float: none" href="<?php echo admin_url( 'options-general.php?page=' . WWM_SLUG ); ?>"><?php _e( 'Enter my email now', 'wordpress-website-monitoring'); ?></a><a class="close" href="#">' + close + '</a>');
+	
+						return button.bind( 'click.pointer', function(e) {
+							t.element.pointer('close');
+						});
+					},
+			        close: function() {
+			            $.post( ajaxurl, {
+	                    	pointer: 'wp_website_monitoring',
+							action: 'dismiss-wp-pointer'
+		                });
+			        }
+			    }).pointer('open');
+			    });
+	
+			})(jQuery);
+			/* ]]> */
+			</script>
+		<?php
 		}
 	}
 
@@ -167,7 +233,7 @@ class WordPress_Website_Monitoring {
 		switch ( $args['type'] ) {
 			case 'text':
 			default:
-		 		echo '<input class="regular-text" type="text" id="' . esc_attr( $args['id'] ) . '" name="' . WWM_SLUG . '[' . esc_attr( $args['id'] ) . ']"  value="' . esc_attr( $this->options[$args['id']] ) . '" />';
+		 		echo '<input class="regular-text" required type="text" id="' . esc_attr( $args['id'] ) . '" name="' . WWM_SLUG . '[' . esc_attr( $args['id'] ) . ']"  value="' . esc_attr( $this->options[$args['id']] ) . '" />';
 
 		 		if ( ! empty( $args['desc'] ) ) {
 		 			echo '<br/><p class="description">' . esc_html( $args['desc'] ) . '</p>';
@@ -206,7 +272,7 @@ class WordPress_Website_Monitoring {
 	 * @return void
 	 */
 	public function register_setting() {
-		register_setting( WWM_SLUG , WWM_SLUG, array( &$this, 'settings_callback' ) );
+		register_setting( WWM_SLUG , WWM_SLUG );
 		add_settings_section( 'general', '', false, __FILE__);
 
 		// Get the configuration of fields
@@ -220,22 +286,6 @@ class WordPress_Website_Monitoring {
 	}
 
 	/**
-	 * Used to clean and sanitize the settings fields.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @param array $inputs
-	 * @return array $inputs
-	 */
-	public function settings_callback( $inputs ) {
-		if ( empty( $inputs['email'] ) ) {
-			$inputs['email'] = $this->settings['email']['std'];
-		}
-		return $inputs;
-	}
-
-	/**
 	 * When our settings are saved: update website email.
 	 *
 	 * @access public
@@ -243,22 +293,34 @@ class WordPress_Website_Monitoring {
 	 * @param string $value
 	 * @return void
 	 */
-	public function update_option( $oldvalue, $value ) {
-		if ( ! empty( $_POST ) && ( $oldvalue['email'] != $value['email'] ) ) {
-			 wp_remote_post(
+	public function pre_update_option( $newvalue, $oldvalue ) {
+		if ( $oldvalue['email'] != $newvalue['email'] ) {
+			 $action = ( empty( $oldvalue['email'] ) ) ? 'add' : 'update';
+
+			$api = wp_remote_post(
 				WWM_API_URL,
 				array(
 					'user-agent' => WWM_API_USER_AGENT,
 					'timeout'	 => 10,
 					'body'       => array(
-						'action' => 'update',
+						'action' => $action,
 						'url'    => home_url(),
-						'email'  => $value['email'],
+						'email'  => $newvalue['email'],
 						'token'  => $this->options['token']
 					)
 				)
 			);
+
+			if ( $action == 'add' ) {
+				$data = wp_remote_retrieve_body( $api );
+				$data = json_decode( $data );
+
+				if ( $data->status == 'success' ) {
+					$newvalue['token'] = $data->token;
+				}
+			}
 		}
+		return $newvalue;
 	}
 
 	/**
@@ -297,7 +359,7 @@ class WordPress_Website_Monitoring {
 	public function display_page() { ?>
 		<div class="wrap">
 			<h2><?php echo WWM_NAME . ' <small><sup>' . WWM_VERSION . '</sup></small>'; ?></h2>
-			<div class="updated settings-error" id="setting-error-settings_updated" style="display: inline-block;"> 
+			<div class="updated settings-error" id="setting-error-settings_updated" style="display: inline-block;">
 <p><strong><?php printf( __( 'If you enjoy our plugin, could you <a href="%s" target="_blank">rate it on wordpress.org</a>? Thank you :)', 'wordpress-website-monitoring' ), 'https://wordpress.org/support/view/plugin-reviews/wp-website-monitoring?rate=5#postform' ); ?></strong></p></div>
 			<p><?php _e( 'We check your website every 5 minutes.', 'wordpress-website-monitoring' ); ?></p>
 			<p><?php _e( 'If your website is down, you will be notified by email.', 'wordpress-website-monitoring' ); ?>
@@ -313,7 +375,7 @@ class WordPress_Website_Monitoring {
 				submit_button();
 			    ?>
 			</form>
-			
+
 		</div>
 	<?php
 	}
