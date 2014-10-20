@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 Plugin Name: WordPress Website Monitoring
 Plugin URI: https://wordpress.org/plugins/wp-website-monitoring/
 Description: Receive an email notification when your website is down.
-Version: 2.0.1
+Version: 2.0.2
 Author: WP Rocket
 Author URI: http://wp-rocket.me
 
@@ -14,7 +14,7 @@ Domain Path: languages
 
 */
 
-define( 'WWM_VERSION'		, '2.0.1' );
+define( 'WWM_VERSION'		, '2.0.2' );
 define( 'WWM_NAME'			, 'Website Monitoring' );
 define( 'WWM_SLUG'			, 'wordpress_website_monitoring' );
 define( 'WWM_API_URL'		, 'https://support.wp-rocket.me/api/monitoring/process.php' );
@@ -136,6 +136,8 @@ class WordPress_Website_Monitoring {
 	 */
 	public function add_pointer_scripts()
 	{	
+		// Get array list of dismissed pointers for current user and convert it to array
+		$dismissed_pointers = explode( ',', get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
 		if( current_user_can( 'manage_options' ) && ! in_array( 'wp_website_monitoring', $dismissed_pointers ) && get_current_screen()->base != 'settings_page_wordpress_website_monitoring' && empty( $this->options['email'] ) ) {
 		
 			$content  = '<h3>' . WWM_NAME . ': ' . __( 'Last Step', 'wordpress-website-monitoring' ) . '</h3>';

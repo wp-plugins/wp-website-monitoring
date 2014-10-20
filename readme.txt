@@ -3,7 +3,7 @@ Contributors: juliobox, GeekPress, wp_media
 Tags: monitoring, uptime monitoring, website monitoring, website notification, website alert
 Requires at least: 3.1
 Tested up to: 4.0
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 
 Receive an email notification when your website is down.
 
@@ -38,6 +38,11 @@ We don't have any business model.
 This plugin is totally free and we don't want to earn money with this plugin :-)
 
 == Changelog ==
+
+= 2.0.2 =
+
+* 20 oct. 2014
+Fix Notice: Undefined variable: dismissed_pointers in /wp-website-monitoring/wordpress-website-monitoring.php on line 140
 
 = 2.0.1 =
 
