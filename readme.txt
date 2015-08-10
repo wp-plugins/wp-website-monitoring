@@ -2,7 +2,7 @@
 Contributors: juliobox, GeekPress, wp_media
 Tags: monitoring, uptime monitoring, website monitoring, website notification, website alert
 Requires at least: 3.1
-Tested up to: 4.1
+Tested up to: 4.3
 Stable tag: 2.0.2
 
 Receive an email notification when your website is down.
